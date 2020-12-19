@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bond;
 using Microsoft.Quantum.QsCompiler.DataTypes;
 
 namespace Microsoft.Quantum.QsCompiler.BondSchemas
