@@ -66,6 +66,12 @@ namespace Microsoft.Quantum.QsCompiler.BondSchemas
             }
         }
 
+        // TODO: Temporary method.
+        public static void InitializeLazyInfrastructure()
+        {
+            // TODO: Implement.
+        }
+
         /// <summary>
         /// Starts the creation of a Bond deserializer.
         /// </summary>

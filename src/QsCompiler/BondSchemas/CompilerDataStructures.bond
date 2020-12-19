@@ -906,6 +906,15 @@ struct QsNamespace
     15: list<QsSourceFileDocumentation> Documentation;
 }
 
+// TODO: Temporary struct for experimentation.
+// TODO: Try to manage versions through Namespaces.
+struct QsCompilationBonded
+{
+    5: vector<bonded<QsNamespace>> Namespaces;
+
+    10: vector<QsQualifiedName> EntryPoints;
+}
+
 struct QsCompilation
 {
     5: vector<QsNamespace> Namespaces;

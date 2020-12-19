@@ -113,6 +113,12 @@ namespace Microsoft.Quantum.QsCompiler
                 PerformanceTracking.TaskStart(PerformanceTracking.Task.SyntaxTreeDeserialization);
                 compilation = BondSchemas.Protocols.DeserializeQsCompilationFromSimpleBinary(byteArray);
                 PerformanceTracking.TaskEnd(PerformanceTracking.Task.SyntaxTreeDeserialization);
+
+                // TODO: Remove this experimentation code.
+                if (compilation != null)
+                {
+                    PerformLazyDeserializationExperiments(compilation);
+                }
             }
             catch (Exception ex)
             {
@@ -121,6 +127,17 @@ namespace Microsoft.Quantum.QsCompiler
             }
 
             return compilation != null && IsValidCompilation(compilation);
+        }
+
+        private static void PerformLazyDeserializationExperiments(QsCompilation qsCompilation)
+        {
+            Console.WriteLine($"Lazy Deserialization Experiments");
+            // TODO: Add performance tracking.
+            BondSchemas.Protocols.InitializeLazyInfrastructure();
+            // TODO: Translate to QsCompilationBonded.
+            // TODO: Serialize.
+            // TODO: Deserialize except bonded types.
+            // TODO: Deserialize bonded types.
         }
 
         /// <summary>
