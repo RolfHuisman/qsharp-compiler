@@ -27,6 +27,37 @@ namespace Microsoft.Quantum.QsCompiler
     public class CompilationLoader
     {
         /// <summary>
+        /// Represents the type of a task event.
+        /// </summary>
+        public enum CompilationTaskEventType
+        {
+            Start,
+            End
+        }
+
+        /// <summary>
+        /// Represents the arguments associated to a task event.
+        /// </summary>
+        public class CompilationTaskEventArgs : EventArgs
+        {
+            public CompilationTaskEventType Type;
+            public string? ParentTaskName;
+            public string TaskName;
+
+            public CompilationTaskEventArgs(CompilationTaskEventType type, string? parentTaskName, string taskName)
+            {
+                this.ParentTaskName = parentTaskName;
+                this.TaskName = taskName;
+                this.Type = type;
+            }
+        }
+
+        /// <summary>
+        /// Defines the handler for compilation task events.
+        /// </summary>
+        public delegate void CompilationTaskEventHandler(object sender, CompilationTaskEventArgs args);
+
+        /// <summary>
         /// Given a load function that loads the content of a sequence of files from disk,
         /// returns the content for all sources to compile.
         /// </summary>
@@ -37,6 +68,11 @@ namespace Microsoft.Quantum.QsCompiler
         /// returns the loaded references for the compilation.
         /// </summary>
         public delegate References ReferenceLoader(Func<IEnumerable<string>, References> loadFromDisk);
+
+        /// <summary>
+        /// Used to raise a compilation task event.
+        /// </summary>
+        public static event CompilationTaskEventHandler? CompilationTaskEvent;
 
         /// <summary>
         /// If LoadAssembly is not null, it will be used to load the dlls that are search for classes defining rewrite steps.
@@ -486,6 +522,7 @@ namespace Microsoft.Quantum.QsCompiler
             PerformanceTracking.TaskStart(PerformanceTracking.Task.OverallCompilation);
 
             // loading the content to compiler
+            BondSchemas.Protocols.Initialize();
             this.logger = logger;
             this.LoadDiagnostics = ImmutableArray<Diagnostic>.Empty;
             this.config = options ?? default;
@@ -615,7 +652,7 @@ namespace Microsoft.Quantum.QsCompiler
             if (this.config.QirOutputFolder != null)
             {
                 var separateTargetInstructions = new LoadedStep(new TargetInstructionInference(), typeof(IRewriteStep), thisDllUri);
-                steps.Add((separateTargetInstructions.Priority, () => this.ExecuteAsAtomicTransformation(separateTargetInstructions, ref this.compilationStatus.TargetInstructionInference)));
+                steps.Add((separateTargetInstructions.Priority, separateTargetInstructions.Name, () => this.ExecuteAsAtomicTransformation(separateTargetInstructions, ref this.compilationStatus.TargetInstructionInference)));
             }
 
             for (int j = 0; j < this.externalRewriteSteps.Length; j++)
@@ -804,9 +841,22 @@ namespace Microsoft.Quantum.QsCompiler
         // private helper methods used during construction
 
         /// <summary>
+        /// Raises a compilation task start event.
+        /// </summary>
+        private void RaiseCompilationTaskStart(string? parentTaskName, string taskName) =>
+            CompilationTaskEvent?.Invoke(this, new CompilationTaskEventArgs(CompilationTaskEventType.Start, parentTaskName, taskName));
+
+        /// <summary>
+        /// Raises a compilation task end event.
+        /// </summary>
+        private void RaiseCompilationTaskEnd(string? parentTaskName, string taskName) =>
+            CompilationTaskEvent?.Invoke(this, new CompilationTaskEventArgs(CompilationTaskEventType.End, parentTaskName, taskName));
+
+        /// <summary>
         /// Executes the given rewrite step on the current CompilationOutput if it is valid, and updates the given
         /// status accordingly. Sets the CompilationOutput to the transformed compilation if the status indicates
         /// success.
+        /// </summary>
         private QsCompilation? ExecuteAsAtomicTransformation(LoadedStep rewriteStep, ref Status status)
         {
             QsCompilation? transformed = null;

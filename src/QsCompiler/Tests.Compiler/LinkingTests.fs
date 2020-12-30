@@ -151,7 +151,7 @@ type LinkingTests(output: ITestOutputHelper) =
             result.Namespaces
             |> Seq.find (fun ns -> ns.Name = Signatures.IntrinsicResolutionNs)
             |> (fun x -> [ x ])
-            |> SyntaxExtensions.Callables
+            |> SyntaxTreeExtensions.Callables
             |> Seq.find (fun call -> call.FullName = targetCallName)
 
         (*Check that the operation is not intrinsic*)
@@ -211,9 +211,9 @@ type LinkingTests(output: ITestOutputHelper) =
 
         Assert.True
             ((match generated.Modifiers.Access with
-              | Internal -> true
-              | _ -> false),
-             "Callables originally internal should remain internal.")
+            | Internal -> true
+            | _ -> false),
+            "Callables originally internal should remain internal.")
 
         let generated =
             getCallablesWithSuffix compilation Signatures.MonomorphizationNs "_IsInternalUsesPublic"

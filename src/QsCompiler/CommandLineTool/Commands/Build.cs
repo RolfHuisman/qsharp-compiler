@@ -253,7 +253,7 @@ namespace Microsoft.Quantum.QsCompiler.CommandLineCompiler
                 logger);
             if (options.PerfOutputFolder != null)
             {
-                PublishPerformanceTrackingData(options.PerfFolder, logger);
+                PublishPerformanceTrackingData(options.PerfOutputFolder, logger);
             }
 
             return ReturnCode.Status(loaded);
