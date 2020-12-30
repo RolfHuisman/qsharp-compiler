@@ -343,8 +343,7 @@ type CallGraphTests(output: ITestOutputHelper) =
         AssertInConcreteGraph graph BarAdj
         AssertInConcreteGraph graph BarCtl
         AssertInConcreteGraph graph BarCtlAdj
-
-        AssertNotInConcreteGraph graph Unused
+        AssertInConcreteGraph graph Unused
 
     [<Fact(Skip = "Double reference resolution is not yet supported")>]
     [<Trait("Category", "Populate Call Graph")>]

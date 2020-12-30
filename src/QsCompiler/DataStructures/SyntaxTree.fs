@@ -130,16 +130,17 @@ type QsTypeParameter =
 
 
 /// used to represent the use of a user defined type within a fully resolved Q# type
-type UserDefinedType =
-    {
-        /// the name of the namespace in which the type is declared
-        Namespace: string
-        /// the name of the declared type
-        Name: string
-        /// the range at which the type occurs relative to the statement (or partial statement) root
-        /// -> is Null for auto-generated type information, i.e. in particular for inferred type information
-        Range: QsNullable<Range>
-    }
+type UserDefinedType = {
+    /// the name of the namespace in which the type is declared
+    Namespace : string
+    /// the name of the declared type
+    Name : string
+    /// the range at which the type occurs relative to the statement (or partial statement) root
+    /// -> is Null for auto-generated type information, i.e. in particular for inferred type information
+    Range : QsNullable<Range>
+}
+    with
+    member this.GetFullName () = {Namespace = this.Namespace; Name = this.Name}
 
 
 /// Fully resolved operation characteristics used to describe the properties of a Q# callable.
@@ -776,52 +777,48 @@ type QsSpecialization =
 
 
 /// describes a Q# function, operation, or type constructor
-type QsCallable =
-    {
-        /// contains the callable kind (function, operation, or type constructor)
-        Kind: QsCallableKind
-        /// contains the name of the callable
-        FullName: QsQualifiedName
-        /// contains all attributes associated with the callable
-        Attributes: ImmutableArray<QsDeclarationAttribute>
-        /// Represents the Q# keywords attached to the declaration that modify its behavior.
-        Modifiers: Modifiers
-        /// identifier for the file the callable is declared in
-        SourceFile: string
-        /// Contains the location information for the declared callable.
-        /// The position offset represents the position in the source file where the callable is declared,
-        /// and the range contains the range occupied by its name relative to that position.
-        /// The location is Null for auto-generated callable constructed e.g. when lifting code blocks or lambdas to a global scope.
-        Location: QsNullable<QsLocation>
-        /// full resolved signature of the callable
-        Signature: ResolvedSignature
-        /// the argument tuple containing the names of the argument tuple items
-        /// represented either as valid name containing a non-nullable string or as an invalid name token
-        /// as well as their type
-        ArgumentTuple: QsTuple<LocalVariableDeclaration<QsLocalSymbol>>
-        /// all specializations declared for this callable -
-        /// each call to the callable is dispatched to a suitable specialization
-        /// depending on the type of the argument it is called with
-        /// and/or which functors are applied to the call
-        Specializations: ImmutableArray<QsSpecialization>
-        /// content of documenting comments associated with the callable
-        Documentation: ImmutableArray<string>
-        /// contains comments in the code associated with this declarations
-        Comments: QsComments
-    }
-    member this.AddAttribute att =
-        { this with Attributes = this.Attributes.Add att }
-
-    member this.AddAttributes(att: _ seq) =
-        { this with Attributes = this.Attributes.AddRange att }
-
-    member this.WithSpecializations(getSpecs: Func<_, _>) =
-        { this with Specializations = getSpecs.Invoke(this.Specializations) }
-
-    member this.WithFullName(getName: Func<_, _>) =
-        { this with FullName = getName.Invoke(this.FullName) }
-
-    member this.WithSourceFile file = { this with SourceFile = file }
+type QsCallable = {
+    /// contains the callable kind (function, operation, or type constructor)
+    Kind : QsCallableKind
+    /// contains the name of the callable
+    FullName : QsQualifiedName
+    /// contains all attributes associated with the callable
+    Attributes : ImmutableArray<QsDeclarationAttribute>
+    /// Represents the Q# keywords attached to the declaration that modify its behavior.
+    Modifiers : Modifiers
+    /// identifier for the file the callable is declared in
+    SourceFile : string
+    /// Contains the location information for the declared callable.
+    /// The position offset represents the position in the source file where the callable is declared,
+    /// and the range contains the range occupied by its name relative to that position.
+    /// The location is Null for auto-generated callable constructed e.g. when lifting code blocks or lambdas to a global scope.
+    Location : QsNullable<QsLocation>
+    /// full resolved signature of the callable
+    Signature : ResolvedSignature
+    /// the argument tuple containing the names of the argument tuple items
+    /// represented either as valid name containing a non-nullable string or as an invalid name token
+    /// as well as their type
+    ArgumentTuple : QsTuple<LocalVariableDeclaration<QsLocalSymbol>>
+    /// all specializations declared for this callable -
+    /// each call to the callable is dispatched to a suitable specialization
+    /// depending on the type of the argument it is called with
+    /// and/or which functors are applied to the call
+    Specializations : ImmutableArray<QsSpecialization>
+    /// content of documenting comments associated with the callable
+    Documentation : ImmutableArray<string>
+    /// contains comments in the code associated with this declarations
+    Comments : QsComments
+}
+    with
+    member this.AddAttribute att = {this with Attributes = this.Attributes.Add att}
+    member this.AddAttributes (att : _ seq) = {this with Attributes = this.Attributes.AddRange att}
+    member this.WithSpecializations (getSpecs : Func<_,_>) = {this with Specializations = getSpecs.Invoke(this.Specializations)}
+    member this.WithFullName (getName : Func<_,_>) = {this with FullName = getName.Invoke(this.FullName)}
+    member this.WithSourceFile file = {this with SourceFile = file}
+    [<Newtonsoft.Json.JsonIgnore>]
+    member this.IsIntrinsic = this.Signature.Information.InferredInformation.IsIntrinsic
+    [<Newtonsoft.Json.JsonIgnore>]
+    member this.IsSelfAdjoint = this.Signature.Information.InferredInformation.IsSelfAdjoint
 
 
 /// used to represent the named and anonymous items in a user defined type

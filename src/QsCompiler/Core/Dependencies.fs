@@ -3,13 +3,9 @@
 
 namespace Microsoft.Quantum.QsCompiler
 
-open System
 open System.Collections.Immutable
-
 open Microsoft.Quantum.QsCompiler.DataTypes
 open Microsoft.Quantum.QsCompiler.ReservedKeywords
-open Microsoft.Quantum.QsCompiler.ReservedKeywords.AssemblyConstants
-open Microsoft.Quantum.QsCompiler.SyntaxTokens
 open Microsoft.Quantum.QsCompiler.SyntaxTree
 
 
@@ -57,10 +53,25 @@ type BuiltIn =
             tId.Namespace = BuiltIn.Deprecated.FullName.Namespace && tId.Name = BuiltIn.Deprecated.FullName.Name
         | Null -> false
 
+    /// Returns true if the given attribute indicates that the corresponding callable should be inlined.
+    static member MarksInlining (att : QsDeclarationAttribute) = att.TypeId |> function
+        | Value tId -> tId.Namespace = BuiltIn.Inline.FullName.Namespace && tId.Name = BuiltIn.Inline.FullName.Name
+        | Null -> false
+
     /// Returns true if the given attribute marks the corresponding declaration as unit test.
     static member MarksTestOperation(att: QsDeclarationAttribute) =
         match att.TypeId with
         | Value tId -> tId.Namespace = BuiltIn.Test.FullName.Namespace && tId.Name = BuiltIn.Test.FullName.Name
+        | Null -> false
+
+    /// Returns true if the given attribute indicates the runtime capability required for execution of the callable.
+    static member MarksRequiredCapability (att : QsDeclarationAttribute) = att.TypeId |> function
+        | Value tId -> tId.Namespace = BuiltIn.RequiresCapability.FullName.Namespace && tId.Name = BuiltIn.RequiresCapability.FullName.Name
+        | Null -> false
+
+    /// Returns true if the given attribute defines a code identifying an instruction within the quantum instruction set that matches this callable.
+    static member DefinesTargetInstruction (att : QsDeclarationAttribute) = att.TypeId |> function
+        | Value tId -> tId.Namespace = BuiltIn.TargetInstruction.FullName.Namespace && tId.Name = BuiltIn.TargetInstruction.FullName.Name
         | Null -> false
 
     /// Returns true if the given attribute defines an alternative name that may be used when loading a type or callable for testing purposes.
@@ -110,11 +121,25 @@ type BuiltIn =
             Kind = Function(TypeParameters = ImmutableArray.Create "T")
         }
 
-    static member RangeReverse =
-        {
-            FullName = { Name = "RangeReverse"; Namespace = BuiltIn.CoreNamespace }
-            Kind = Function(TypeParameters = ImmutableArray.Empty)
-        }
+    static member RangeStart = {
+        FullName = {Name = "RangeStart"; Namespace = BuiltIn.CoreNamespace}
+        Kind = Function (TypeParameters = ImmutableArray.Empty)
+    }
+
+    static member RangeStep = {
+        FullName = {Name = "RangeStep"; Namespace = BuiltIn.CoreNamespace}
+        Kind = Function (TypeParameters = ImmutableArray.Empty)
+    }
+
+    static member RangeEnd = {
+        FullName = {Name = "RangeEnd"; Namespace = BuiltIn.CoreNamespace}
+        Kind = Function (TypeParameters = ImmutableArray.Empty)
+    }
+
+    static member RangeReverse = {
+        FullName = {Name = "RangeReverse"; Namespace = BuiltIn.CoreNamespace}
+        Kind = Function (TypeParameters = ImmutableArray.Empty)
+    }
 
     static member Attribute = { FullName = { Name = "Attribute"; Namespace = BuiltIn.CoreNamespace }; Kind = Attribute }
 
@@ -124,8 +149,22 @@ type BuiltIn =
     static member Deprecated =
         { FullName = { Name = "Deprecated"; Namespace = BuiltIn.CoreNamespace }; Kind = Attribute }
 
-    static member RequiresCapability =
-        { FullName = { Name = "RequiresCapability"; Namespace = BuiltIn.TargetingNamespace }; Kind = Attribute }
+    static member Inline = {
+        FullName = {Name = "Inline"; Namespace = BuiltIn.CoreNamespace}
+        Kind = Attribute
+    }
+
+    // dependencies in Microsoft.Quantum.Targeting
+
+    static member TargetInstruction = {
+        FullName = {Name = "TargetInstruction"; Namespace = BuiltIn.TargetingNamespace}
+        Kind = Attribute
+    }
+
+    static member RequiresCapability = {
+        FullName = {Name = "RequiresCapability"; Namespace = BuiltIn.TargetingNamespace}
+        Kind = Attribute
+    }
 
     // dependencies in Microsoft.Quantum.Diagnostics
 

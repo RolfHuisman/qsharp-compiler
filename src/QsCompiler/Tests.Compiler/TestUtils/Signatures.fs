@@ -132,54 +132,55 @@ let public PopulateCallGraphNS = "Microsoft.Quantum.Testing.PopulateCallGraph"
 
 /// Expected callable signatures to be found when running Monomorphization tests
 let public MonomorphizationSignatures =
-    [| // Test Case 1
-        (_DefaultTypes,
-         [|
-             MonomorphizationNs, "Test1", [||], "Unit"
-             GenericsNs, "Test1Main", [||], "Unit"
+    [|
+        (_DefaultTypes, [| (*Test Case 1*)
+            MonomorphizationNs, "Test1", [||], "Unit"
+            GenericsNs, "Test1Main", [||], "Unit"
 
-             GenericsNs, "BasicGeneric", [| "Double"; "Int" |], "Unit"
-             GenericsNs, "BasicGeneric", [| "String"; "String" |], "Unit"
-             GenericsNs, "BasicGeneric", [| "Unit"; "Unit" |], "Unit"
-             GenericsNs, "BasicGeneric", [| "String"; "Double" |], "Unit"
-             GenericsNs, "BasicGeneric", [| "Int"; "Double" |], "Unit"
-             GenericsNs, "NoArgsGeneric", [||], "Double"
-             GenericsNs, "ReturnGeneric", [| "Double"; "String"; "Int" |], "Int"
-             GenericsNs, "ReturnGeneric", [| "String"; "Int"; "String" |], "String"
-         |])
-        // Test Case 2
-        (_DefaultTypes,
-         [|
-             MonomorphizationNs, "Test2", [||], "Unit"
-             GenericsNs, "Test2Main", [||], "Unit"
+            GenericsNs, "BasicGeneric", [|"Double"; "Int"|], "Unit"
+            GenericsNs, "BasicGeneric", [|"String"; "String"|], "Unit"
+            GenericsNs, "BasicGeneric", [|"Unit"; "Unit"|], "Unit"
+            GenericsNs, "BasicGeneric", [|"String"; "Double"|], "Unit"
+            GenericsNs, "BasicGeneric", [|"Int"; "Double"|], "Unit"
+            GenericsNs, "NoArgsGeneric", [||], "Double"
+            GenericsNs, "ReturnGeneric", [|"Double"; "String"; "Int"|], "Int"
+            GenericsNs, "ReturnGeneric", [|"String"; "Int"; "String"|], "String"
+        |])
+        (_DefaultTypes, [| (*Test Case 2*)
+            MonomorphizationNs, "Test2", [||], "Unit"
+            GenericsNs, "Test2Main", [||], "Unit"
 
-             GenericsNs, "ArrayGeneric", [| "Qubit"; "String" |], "Int"
-             GenericsNs, "ArrayGeneric", [| "Qubit"; "Int" |], "Int"
-             GenericsNs, "GenericCallsGeneric", [| "Qubit"; "Int" |], "Unit"
-         |])
-        // Test Case 3
-        (_DefaultTypes,
-         [|
-             MonomorphizationNs, "Test3", [||], "Unit"
-             GenericsNs, "Test3Main", [||], "Unit"
+            GenericsNs, "ArrayGeneric", [|"Qubit"; "String"|], "Int"
+            GenericsNs, "ArrayGeneric", [|"Qubit"; "Int"|], "Int"
+            GenericsNs, "GenericCallsGeneric", [|"Qubit"; "Int"|], "Unit"
+        |])
+        (_DefaultTypes, [| (*Test Case 3*)
+            MonomorphizationNs, "Test3", [||], "Unit"
+            GenericsNs, "Test3Main", [||], "Unit"
 
-             GenericsNs, "GenericCallsSpecializations", [| "Double"; "String"; "Qubit[]" |], "Unit"
-             GenericsNs, "GenericCallsSpecializations", [| "Double"; "String"; "Double" |], "Unit"
-             GenericsNs, "GenericCallsSpecializations", [| "String"; "Int"; "Unit" |], "Unit"
+            GenericsNs, "GenericCallsSpecializations", [|"Double"; "String"; "Qubit[]"|], "Unit"
+            GenericsNs, "GenericCallsSpecializations", [|"Double"; "String"; "Double"|], "Unit"
+            GenericsNs, "GenericCallsSpecializations", [|"String"; "Int"; "Unit"|], "Unit"
 
-             GenericsNs, "BasicGeneric", [| "String"; "Qubit[]" |], "Unit"
-             GenericsNs, "BasicGeneric", [| "String"; "Int" |], "Unit"
+            GenericsNs, "BasicGeneric", [|"Double"; "String"|], "Unit"
+            GenericsNs, "BasicGeneric", [|"String"; "Qubit[]"|], "Unit"
+            GenericsNs, "BasicGeneric", [|"String"; "Int"|], "Unit"
+            GenericsNs, "BasicGeneric", [|"Qubit[]"; "Qubit[]"|], "Unit"
+            GenericsNs, "BasicGeneric", [|"Qubit[]"; "Double"|], "Unit"
+            GenericsNs, "BasicGeneric", [|"Qubit[]"; "Unit"|], "Unit"
+            GenericsNs, "BasicGeneric", [|"String"; "Double"|], "Unit"
+            GenericsNs, "BasicGeneric", [|"Int"; "Unit"|], "Unit"
 
-             GenericsNs, "ArrayGeneric", [| "Qubit"; "Double" |], "Int"
-         |])
-        // Test Case 4
-        (_DefaultTypes,
-         [|
-             MonomorphizationNs, "Test4", [||], "Unit"
-             GenericsNs, "Test4Main", [||], "Unit"
-             GenericsNs, "_GenericCallsSelf", [||], "Unit"
-             GenericsNs, "_GenericCallsSelf2", [| "Double" |], "Unit"
-         |])
+            GenericsNs, "ArrayGeneric", [|"Qubit"; "Double"|], "Int"
+            GenericsNs, "ArrayGeneric", [|"Qubit"; "Qubit[]"|], "Int"
+            GenericsNs, "ArrayGeneric", [|"Qubit"; "Unit"|], "Int"
+        |])
+        (_DefaultTypes, [| (*Test Case 4*)
+            MonomorphizationNs, "Test4", [||], "Unit"
+            GenericsNs, "Test4Main", [||], "Unit"
+            GenericsNs, "_GenericCallsSelf", [||], "Unit"
+            GenericsNs, "_GenericCallsSelf2", [|"Double"|], "Unit"
+        |])
     |]
     |> _MakeSignatures
 

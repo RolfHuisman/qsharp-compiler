@@ -319,6 +319,7 @@ type ErrorCode =
 
     | PublishingPerfResultsFailed = 8101
     | PerformanceTrackingFailed = 8102
+    | SyntaxTreeNotMonomorphized = 8103
 
 
 type WarningCode =
@@ -370,6 +371,7 @@ type WarningCode =
 
     | CsharpGenerationGeneratedWarning = 8001
     | InvalidAssemblyProperties = 8101
+    | MissingTargetInstructionName = 8102
 
 
 type InformationCode =
@@ -868,6 +870,58 @@ type DiagnosticItem =
 
             | _ -> ""
 
+    static member Message (code : WarningCode, args : IEnumerable<string>) =
+        let ApplyArguments = DiagnosticItem.ApplyArguments args << function
+            | WarningCode.ExcessSemicolon                         -> "Extra semicolon will be ignored."
+            | WarningCode.ExcessComma                             -> "Extra comma will be ignored."
+            | WarningCode.DeprecatedUnitType                      -> "Deprecated syntax. Use the type name \"Unit\" instead."
+            | WarningCode.DeprecatedArgumentForFunctorGenerator   -> "Deprecated syntax. An argument tuple is expected where \"...\" indicates the position of the declaration arguments, e.g. \"(...)\" for body and adjoint, \"(cs, ...)\" for controlled and controlled adjoint."
+            | WarningCode.DeprecatedOpCharacteristics             -> "Deprecated syntax. Use \"{0}\" to denote the operation characteristics instead."
+            | WarningCode.DeprecatedOpCharacteristicsIntro        -> "Deprecated syntax. Use \"is\" instead."
+            | WarningCode.DeprecatedNOToperator                   -> "Deprecated syntax. Use \"not\" to denote the logical NOT operator."
+            | WarningCode.DeprecatedANDoperator                   -> "Deprecated syntax. Use \"and\" to denote the logical AND operator."
+            | WarningCode.DeprecatedORoperator                    -> "Deprecated syntax. Use \"or\" to denote the logical OR operator."
+            | WarningCode.UseOfFutureReservedKeyword              -> "The symbol will be reserved for internal use in the future."
+            | WarningCode.UseOfUnderscorePattern                  -> "Double underscores as well as underscores before a dot or at the end of a namespace name will be reserved for internal use in the future."
+            | WarningCode.DeprecatedRUSloopInFunction             -> "The use of repeat-until-success-loops within functions may not be supported in the future. Please use a while-loop instead."
+
+            | WarningCode.DiscardingItemInAssignment              -> "The expression on the right hand side is discarded on assignment and can be omitted."
+            | WarningCode.ConditionalEvaluationOfOperationCall    -> "This expression may be short-circuited, and operation calls may not be executed."
+            | WarningCode.DeprecationWithRedirect                 -> "{0} has been deprecated. Please use {1} instead."
+            | WarningCode.DeprecationWithoutRedirect              -> "{0} has been deprecated."
+            | WarningCode.TypeParameterNotResolvedByArgument      -> "The value of the type parameter is not determined by the argument type. It will always have to be explicitly specified by passing type arguments."
+            | WarningCode.ReturnTypeNotResolvedByArgument         -> "The return type is not fully determined by the argument type. It will always have to be explicitly specified by passing type arguments."
+            | WarningCode.NamespaceAleadyOpen                     -> "The namespace is already open."
+            | WarningCode.NamespaceAliasIsAlreadyDefined          -> "A short name for this namespace is already defined."
+            | WarningCode.MissingBodyDeclaration                  -> "A body specification for this callable is missing. The callable is assumed to be intrinsic."
+            | WarningCode.DuplicateAttribute                      -> "The attribute {0} is a duplication and will be ignored."
+            | WarningCode.MissingEntryPoint                       -> "The project is an executable Q# project but no entry point has been found. The project should be a library, and any C# driver code should be defined in a separate project."
+            | WarningCode.IgnoredEntryPoint                       -> "Entry point will be ignored. The project is a Q# library and cannot have any entry points."
+            | WarningCode.ReservedEntryPointArgumentName          -> "The argument name conflicts with a default argument for a Q# command line application."
+            | WarningCode.NonResultTypeReturnedInEntryPoint       -> "Only values of type Result, Result[], and tuples thereof can be returned when executing on a quantum processor."
+            | WarningCode.EntryPointInLibrary                     -> "Invalid entry point. Only executable Q# projects can have entry points. Entry point will be ignored. "
+            | WarningCode.GeneratorDirectiveWillBeIgnored         -> "Generation directive ignored. A specialization of this callable has been declared as intrinsic."
+            | WarningCode.UnreachableCode                         -> "This statement will never be executed."
+
+            | WarningCode.DuplicateSourceFile                     -> "A source file with name \"{0}\" already exists in the compilation."
+            | WarningCode.DuplicateProjectReference               -> "A project reference with name \"{0}\" already exists in the compilation."
+            | WarningCode.DuplicateBinaryFile                     -> "A binary file with name \"{0}\" already exists in the compilation."
+            | WarningCode.ReferenceToUnknownProject               -> "The referenced project \"{0}\" could not be found within the workspace folder."
+            | WarningCode.UnknownBinaryFile                       -> "Could not find the binary file \"{0}\" to include as reference in the compilation."
+            | WarningCode.CouldNotLoadBinaryFile                  -> "Unable to load binary file \"{0}\"."
+            | WarningCode.ReferencesSetToNull                     -> "No references given to include in the compilation."
+            | WarningCode.ReferenceCannotBeIncludedInDll          -> "The reference to \"{0}\" could not be included in the generated dll."
+            | WarningCode.UnresolvedItemsInGeneratedQs            -> "Some item(s) could not be resolved during compilation."
+
+            | WarningCode.RewriteStepDiagnosticsGenerationFailed  -> "The diagnostics generated by the compilation step \"{0}\" could not be logged. The step may have been compiled against an older compiler version."
+            | WarningCode.PreconditionVerificationFailed          -> "The precondition for the compilation step \"{0}\" loaded from \"{1}\" was not met. The transformation will be skipped."
+            | WarningCode.RewriteStepLoadedViaReflection          -> "The compilation step \"{0}\" defined in \"{1}\" is not fully compatible with this compiler version and may fail on execution. The step may have been compiled against an older compiler version."
+            | WarningCode.FailedToLoadRewriteStepViaReflection    -> "A possible rewrite step has been detected in \"{0}\". The step could not be loaded and will be ignored."
+
+            | WarningCode.CsharpGenerationGeneratedWarning        -> ""
+            | WarningCode.InvalidAssemblyProperties               -> "Some of the specified assembly properties could not be processed. Either they did not match the expected format, or they duplicate existing ones."
+            | WarningCode.MissingTargetInstructionName            -> "Missing target instruction name for intrinsic callable. The automatically determined name conflicts with another target instruction."
+            | _                                                   -> ""
         code |> ApplyArguments
 
     static member Message(code: WarningCode, args: IEnumerable<string>) =
